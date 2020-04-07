@@ -22,12 +22,36 @@ void showCloud(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr& cloud) {
 	visualizer.join();
 }
 
+void matching(CorrespondencesPtr correspondence, PointCloud<SHOT352>::Ptr& objectDes, PointCloud<SHOT352>::Ptr& sceneDes) { //kdTree
+
+  KdTreeFLANN<SHOT352> match_search;
+  match_search.setInputCloud(objectDes);
+
+  //  For each scene keypoint descriptor, find nearest neighbor into the model keypoints descriptor cloud and add it to the correspondences vector.
+  for (size_t i=0; i<sceneDes->size(); i++) { // Si no funciona cambia los ++ de sitio
+    vector<int> neigh_indices (1);
+    vector<float> neigh_sqr_dists (1);
+    if (!isfinite(sceneDes->at(i).descriptor[0])) { //skipping NaNs
+      continue;
+    }
+    int found_neighs = match_search.nearestKSearch(sceneDes->at(i), 1, neigh_indices, neigh_sqr_dists);
+    if(found_neighs == 1 && neigh_sqr_dists[0] < 0.7f) //  add match only if the squared descriptor distance is less than 0.25 (SHOT descriptor distances are between 0 and 1 by design)
+    {
+      Correspondence corr (neigh_indices[0], static_cast<int> (i), neigh_sqr_dists[0]);
+      correspondence->push_back (corr);
+    }
+  }
+  cout << "Correspondences found: " <<correspondence->size () << endl;
+
+}
+
 void keypoints(PointCloud<PointXYZRGBA>::Ptr& cloud, PointCloud<PointXYZRGBA>::Ptr& cloudKP, PointCloud<SHOT352>::Ptr& cloudDes) {
-	// Detector de keypoints
+	// Detector
 	UniformSampling<PointXYZRGBA> uniform_sampling;
 	uniform_sampling.setInputCloud(cloud);
 	uniform_sampling.setRadiusSearch(0.05f);
 	uniform_sampling.filter(*cloudKP);
+
 	// Normales
 	PointCloud<Normal>::Ptr cloudNormal(new PointCloud<Normal> ());
 	NormalEstimationOMP<PointXYZRGBA, Normal> norm_est;
@@ -37,7 +61,7 @@ void keypoints(PointCloud<PointXYZRGBA>::Ptr& cloud, PointCloud<PointXYZRGBA>::P
 
 	//Descriptor
 	pcl::SHOTEstimationOMP<PointXYZRGBA, Normal, SHOT352> descr_est;
-	descr_est.setRadiusSearch(0.2f);
+	descr_est.setRadiusSearch(0.05f);
 	descr_est.setInputCloud(cloudKP);
 	descr_est.setInputNormals(cloudNormal);
 	descr_est.setSearchSurface(cloud);
@@ -131,6 +155,13 @@ void loadImages(PointCloud<PointXYZRGBA>::Ptr& scene, vector<PointCloud<PointXYZ
 }
 
 int main (int argc, char** argv) {
+	// Definir los umbrales para eliminar los planos dominantes
+	// Inicializar el vector con el número de iteraciones y el valor del umbral para eliminar los planos dominantes
+	// Se saca por empirismo, tanto los umbrales como el número de iteraciones
+	vector<float> threshold;
+	threshold.push_back(0.08);
+	threshold.push_back(0.04);
+	threshold.push_back(0.02);
 
 	// Definir las nubes para la escena y sus keypoints y el descriptor
     PointCloud<PointXYZRGBA>::Ptr scene(new PointCloud<PointXYZRGBA>);
@@ -150,13 +181,12 @@ int main (int argc, char** argv) {
 		objectsDes.push_back(object);
 	}
 
-	// Definir los umbrales para eliminar los planos dominantes
-	// Inicializar el vector con el número de iteraciones y el valor del umbral para eliminar los planos dominantes
-	// Se saca por empirismo, tanto los umbrales como el número de iteraciones
-	vector<float> threshold;
-	threshold.push_back(0.08);
-	threshold.push_back(0.04);
-	threshold.push_back(0.02);
+	// Definir el vector de correspondencias
+	vector<CorrespondencesPtr> correspondences;
+	for(size_t i=0; i<4; i++) {
+		CorrespondencesPtr correspondence(new Correspondences);
+		correspondences.push_back(correspondence);
+	}
 
 	// Cargar la escena_________________________________________________________
     loadImages(scene, objects);
@@ -165,14 +195,15 @@ int main (int argc, char** argv) {
 	removePlane(scene, threshold);
 
     // Extraer los detectores y descriptores____________________________________
-	cout << "escena" << endl;
 	keypoints(scene, sceneKP, sceneDes);
 	for(int i=0; i<4; i++) {
-		cout << "objeto " << i << endl;
 		keypoints(objects[i],objectsKP[i],objectsDes[i]);
 	}
-	
-    // Matching entre objetos y escena
+
+    // Matching entre objetos y escena__________________________________________
+	for(int i=0; i<4; i++) {
+		matching(correspondences[i],objectsDes[i],sceneDes);
+	}
 
     // Corregir malos emparejamientos
 
