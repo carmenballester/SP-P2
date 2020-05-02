@@ -341,6 +341,7 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/include/eigen3/Eigen/src/plugins/MatrixCwiseUnaryOps.h
  /usr/include/eigen3/unsupported/Eigen/NonLinearOptimization
  /usr/include/eigen3/unsupported/Eigen/NumericalDiff
+ /usr/include/eigen3/unsupported/Eigen/Polynomials
  /usr/include/eigen3/unsupported/Eigen/src/NonLinearOptimization/HybridNonLinearSolver.h
  /usr/include/eigen3/unsupported/Eigen/src/NonLinearOptimization/LevenbergMarquardt.h
  /usr/include/eigen3/unsupported/Eigen/src/NonLinearOptimization/chkder.h
@@ -353,6 +354,9 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/include/eigen3/unsupported/Eigen/src/NonLinearOptimization/r1updt.h
  /usr/include/eigen3/unsupported/Eigen/src/NonLinearOptimization/rwupdt.h
  /usr/include/eigen3/unsupported/Eigen/src/NumericalDiff/NumericalDiff.h
+ /usr/include/eigen3/unsupported/Eigen/src/Polynomials/Companion.h
+ /usr/include/eigen3/unsupported/Eigen/src/Polynomials/PolynomialSolver.h
+ /usr/include/eigen3/unsupported/Eigen/src/Polynomials/PolynomialUtils.h
  /usr/local/include/pcl-1.8/pcl/ModelCoefficients.h
  /usr/local/include/pcl-1.8/pcl/PCLHeader.h
  /usr/local/include/pcl-1.8/pcl/PCLImage.h
@@ -389,12 +393,16 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/local/include/pcl-1.8/pcl/exceptions.h
  /usr/local/include/pcl-1.8/pcl/features/feature.h
  /usr/local/include/pcl-1.8/pcl/features/impl/feature.hpp
+ /usr/local/include/pcl-1.8/pcl/features/impl/integral_image2D.hpp
+ /usr/local/include/pcl-1.8/pcl/features/impl/integral_image_normal.hpp
  /usr/local/include/pcl-1.8/pcl/features/impl/normal_3d.hpp
  /usr/local/include/pcl-1.8/pcl/features/impl/normal_3d_omp.hpp
  /usr/local/include/pcl-1.8/pcl/features/impl/shot.hpp
  /usr/local/include/pcl-1.8/pcl/features/impl/shot_lrf.hpp
  /usr/local/include/pcl-1.8/pcl/features/impl/shot_lrf_omp.hpp
  /usr/local/include/pcl-1.8/pcl/features/impl/shot_omp.hpp
+ /usr/local/include/pcl-1.8/pcl/features/integral_image2D.h
+ /usr/local/include/pcl-1.8/pcl/features/integral_image_normal.h
  /usr/local/include/pcl-1.8/pcl/features/normal_3d.h
  /usr/local/include/pcl-1.8/pcl/features/normal_3d_omp.h
  /usr/local/include/pcl-1.8/pcl/features/shot.h
@@ -408,7 +416,9 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/local/include/pcl-1.8/pcl/filters/impl/extract_indices.hpp
  /usr/local/include/pcl-1.8/pcl/filters/impl/filter.hpp
  /usr/local/include/pcl-1.8/pcl/filters/impl/filter_indices.hpp
+ /usr/local/include/pcl-1.8/pcl/filters/impl/passthrough.hpp
  /usr/local/include/pcl-1.8/pcl/filters/impl/uniform_sampling.hpp
+ /usr/local/include/pcl-1.8/pcl/filters/passthrough.h
  /usr/local/include/pcl-1.8/pcl/filters/uniform_sampling.h
  /usr/local/include/pcl-1.8/pcl/for_each_type.h
  /usr/local/include/pcl-1.8/pcl/geometry/planar_polygon.h
@@ -425,6 +435,10 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/local/include/pcl-1.8/pcl/kdtree/impl/kdtree_flann.hpp
  /usr/local/include/pcl-1.8/pcl/kdtree/kdtree.h
  /usr/local/include/pcl-1.8/pcl/kdtree/kdtree_flann.h
+ /usr/local/include/pcl-1.8/pcl/keypoints/harris_3d.h
+ /usr/local/include/pcl-1.8/pcl/keypoints/impl/harris_3d.hpp
+ /usr/local/include/pcl-1.8/pcl/keypoints/impl/keypoint.hpp
+ /usr/local/include/pcl-1.8/pcl/keypoints/keypoint.h
  /usr/local/include/pcl-1.8/pcl/octree/impl/octree_pointcloud.hpp
  /usr/local/include/pcl-1.8/pcl/octree/impl/octree_search.hpp
  /usr/local/include/pcl-1.8/pcl/octree/octree_base.h
@@ -443,6 +457,20 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/local/include/pcl-1.8/pcl/point_traits.h
  /usr/local/include/pcl-1.8/pcl/point_types.h
  /usr/local/include/pcl-1.8/pcl/register_point_struct.h
+ /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection.h
+ /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection_distance.h
+ /usr/local/include/pcl-1.8/pcl/registration/correspondence_sorting.h
+ /usr/local/include/pcl-1.8/pcl/registration/correspondence_types.h
+ /usr/local/include/pcl-1.8/pcl/registration/eigen.h
+ /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection.hpp
+ /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection_distance.hpp
+ /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_types.hpp
+ /usr/local/include/pcl-1.8/pcl/registration/impl/transformation_estimation_point_to_plane_lls_weighted.hpp
+ /usr/local/include/pcl-1.8/pcl/registration/impl/transformation_estimation_svd.hpp
+ /usr/local/include/pcl-1.8/pcl/registration/transformation_estimation.h
+ /usr/local/include/pcl-1.8/pcl/registration/transformation_estimation_point_to_plane_lls_weighted.h
+ /usr/local/include/pcl-1.8/pcl/registration/transformation_estimation_svd.h
+ /usr/local/include/pcl-1.8/pcl/registration/warp_point_rigid.h
  /usr/local/include/pcl-1.8/pcl/sample_consensus/boost.h
  /usr/local/include/pcl-1.8/pcl/sample_consensus/eigen.h
  /usr/local/include/pcl-1.8/pcl/sample_consensus/impl/lmeds.hpp
