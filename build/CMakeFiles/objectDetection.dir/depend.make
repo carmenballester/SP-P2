@@ -531,7 +531,7 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/convergence_criteria.h
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/correspondence_estimation.h
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection.h
-CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection_distance.h
+CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection_sample_consensus.h
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/correspondence_sorting.h
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/correspondence_types.h
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/default_convergence_criteria.h
@@ -540,7 +540,7 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/icp.h
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_estimation.hpp
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection.hpp
-CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection_distance.hpp
+CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection_sample_consensus.hpp
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_types.hpp
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/impl/default_convergence_criteria.hpp
 CMakeFiles/objectDetection.dir/objectDetection.cpp.o: /usr/local/include/pcl-1.8/pcl/registration/impl/icp.hpp

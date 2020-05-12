@@ -45,7 +45,7 @@ pcl/point_types.h
 -
 pcl/registration/correspondence_estimation.h
 -
-pcl/registration/correspondence_rejection_distance.h
+pcl/registration/correspondence_rejection_sample_consensus.h
 -
 pcl/registration/icp.h
 -
@@ -3980,10 +3980,16 @@ pcl/search/kdtree.h
 pcl/registration/impl/correspondence_rejection.hpp
 -
 
-/usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection_distance.h
+/usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection_sample_consensus.h
 pcl/registration/correspondence_rejection.h
 -
-pcl/registration/impl/correspondence_rejection_distance.hpp
+pcl/sample_consensus/ransac.h
+-
+pcl/sample_consensus/sac_model_registration.h
+-
+pcl/common/transforms.h
+-
+pcl/registration/impl/correspondence_rejection_sample_consensus.hpp
 -
 
 /usr/local/include/pcl-1.8/pcl/registration/correspondence_sorting.h
@@ -4048,7 +4054,9 @@ pcl/common/copy_point.h
 
 /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection.hpp
 
-/usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection_distance.hpp
+/usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection_sample_consensus.hpp
+boost/unordered_map.hpp
+-
 
 /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_types.hpp
 limits

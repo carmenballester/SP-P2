@@ -1,14 +1,14 @@
 #include "objectDetection.h"
 
-void spawnViewer(PointCloud<PointXYZRGBA>::Ptr pointCloud/*, PointCloud<PointXYZRGBA>::Ptr cloudKP*/) {
+void spawnViewer(PointCloud<PointXYZRGBA>::Ptr pointCloud, PointCloud<PointXYZRGBA>::Ptr cloudKP) {
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer ("3D Viewer"));
-	// viewer->addCoordinateSystem (1.0);
+	viewer->addCoordinateSystem (1.0);
 
 	// Visualizar keypoints
-	// for(size_t i=0; i<cloudKP->size(); i++){
-	// 	string str = boost::lexical_cast<string>(i);
-	// 	viewer->addSphere (cloudKP->points[i], 0.005, 0, 1, 0, str);
-	// }
+	for(size_t i=0; i<cloudKP->size(); i++){
+		string str = boost::lexical_cast<string>(i);
+		viewer->addSphere (cloudKP->points[i], 0.005, 0, 1, 0, str);
+	}
 
 
 	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> rgb(pointCloud);
@@ -21,9 +21,9 @@ void spawnViewer(PointCloud<PointXYZRGBA>::Ptr pointCloud/*, PointCloud<PointXYZ
 }
 
 //Mostar nube y los keypoints
-void showCloud(PointCloud<PointXYZRGBA>::Ptr& cloud/*, PointCloud<PointXYZRGBA>::Ptr& cloudKP*/) {
+void showCloud(PointCloud<PointXYZRGBA>::Ptr& cloud, PointCloud<PointXYZRGBA>::Ptr& cloudKP) {
 	// Abrir un visualizador que muestre la nube filtrada
-	boost::thread visualizer = boost::thread(spawnViewer, cloud/*, cloudKP*/);
+	boost::thread visualizer = boost::thread(spawnViewer, cloud, cloudKP);
 	// cout << "Pulsa para continuar" << endl;
 	cin.get();
 	visualizer.interrupt();
@@ -97,12 +97,12 @@ void showTransformation(PointCloud<PointXYZRGBA>::Ptr& scene, PointCloud<PointXY
 	visualizer.join();
 }
 
-void transformation(CorrespondencesPtr correspondenceFilt, PointCloud<PointXYZRGBA>::Ptr object, PointCloud<PointXYZRGBA>::Ptr scene) {
+void transformation(CorrespondencesPtr correspondenceFilt, PointCloud<PointXYZRGBA>::Ptr objectKP, PointCloud<PointXYZRGBA>::Ptr sceneKP, PointCloud<PointXYZRGBA>::Ptr object, PointCloud<PointXYZRGBA>::Ptr scene) {
 
 	registration::TransformationEstimationSVD<PointXYZRGBA,PointXYZRGBA>::Matrix4 transform;
 	registration::TransformationEstimationSVD<PointXYZRGBA, PointXYZRGBA> te;
 
-	te.estimateRigidTransformation(*object, *scene, *correspondenceFilt, transform);
+	te.estimateRigidTransformation(*objectKP, *sceneKP, *correspondenceFilt, transform);
 
 	// std::cout << "The Estimated Rotation and translation matrices (using getTransformation function) are : \n" << std::endl;
 	// printf ("\n");
@@ -117,42 +117,43 @@ void transformation(CorrespondencesPtr correspondenceFilt, PointCloud<PointXYZRG
 
 //______________________________________________________________________________
 	// IterativeClosestPoint<PointXYZRGBA, PointXYZRGBA>::Matrix4 transform2;
-	IterativeClosestPoint<PointXYZRGBA, PointXYZRGBA> icp;
-	PointCloud<PointXYZRGBA>::Ptr object_registered;
-
-	icp.setInputSource(object);
-	icp.setInputTarget(scene);
-
-	// Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
-	icp.setMaxCorrespondenceDistance (0.05);
-	// Set the maximum number of iterations (criterion 1)
-	icp.setMaximumIterations (50);
-	// Set the transformation epsilon (criterion 2)
-	icp.setTransformationEpsilon (1e-8);
-	// Set the euclidean distance difference epsilon (criterion 3)
-	icp.setEuclideanFitnessEpsilon (1);
-
-
-	Eigen::Matrix4f transformation = icp.getFinalTransformation ();
-	pcl::transformPointCloud(*object, *object, transformation);
-	showTransformation(scene, object);
+	// IterativeClosestPoint<PointXYZRGBA, PointXYZRGBA> icp;
+	// PointCloud<PointXYZRGBA>::Ptr object_registered;
+	//
+	// icp.setInputSource(object);
+	// icp.setInputTarget(scene);
+	//
+	// // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
+	// icp.setMaxCorrespondenceDistance (0.05);
+	// // Set the maximum number of iterations (criterion 1)
+	// icp.setMaximumIterations (50);
+	// // Set the transformation epsilon (criterion 2)
+	// icp.setTransformationEpsilon (1e-8);
+	// // Set the euclidean distance difference epsilon (criterion 3)
+	// icp.setEuclideanFitnessEpsilon (1);
+	//
+	//
+	// Eigen::Matrix4f transformation = icp.getFinalTransformation ();
+	// pcl::transformPointCloud(*object, *object, transformation);
+	// showTransformation(scene, object);
 
 }
 
-void rejection(CorrespondencesPtr correspondence, CorrespondencesPtr correspondenceFilt, PointCloud<PointXYZRGBA>::Ptr& object, PointCloud<PointXYZRGBA>::Ptr& scene, float maximumDistance) {
+void rejection(CorrespondencesPtr correspondence, CorrespondencesPtr correspondenceFilt, PointCloud<PointXYZRGBA>::Ptr& objectKP, PointCloud<PointXYZRGBA>::Ptr& sceneKP, float maximumDistance) {
 
-	registration::CorrespondenceRejectorDistance rejector;
+	registration::CorrespondenceRejectorSampleConsensus<PointXYZRGBA> rejector;
 
-	rejector.setInputSource<PointXYZRGBA>(object);
-	rejector.setInputTarget<PointXYZRGBA>(scene);
+	rejector.setInputSource(objectKP);
+	rejector.setInputTarget(sceneKP);
 	rejector.setInputCorrespondences(correspondence);
-	rejector.setMaximumDistance(maximumDistance);
+	rejector.setInlierThreshold(maximumDistance);
+	rejector.setRefineModel(true);
 	rejector.getCorrespondences(*correspondenceFilt);
 
 	cout << "Correspondences after filter: " <<correspondenceFilt->size () << endl;
 }
 
-void matching(CorrespondencesPtr correspondence, PointCloud<SHOT352>::Ptr& objectDes, PointCloud<SHOT352>::Ptr& sceneDes) { //kdTree
+void matching(CorrespondencesPtr correspondence, PointCloud<SHOT352>::Ptr& objectDes, PointCloud<SHOT352>::Ptr& sceneDes, float maximumDistance) {
 
 	//KDTREE
 	// KdTreeFLANN<SHOT352> match_search;
@@ -177,7 +178,7 @@ void matching(CorrespondencesPtr correspondence, PointCloud<SHOT352>::Ptr& objec
 	registration::CorrespondenceEstimation<SHOT352, SHOT352> est;
 	est.setInputSource(objectDes);
 	est.setInputTarget(sceneDes);
-	est.determineCorrespondences (*correspondence, 0.8f);
+	est.determineReciprocalCorrespondences(*correspondence, maximumDistance);
 }
 
 void features(PointCloud<PointXYZRGBA>::Ptr& cloud, PointCloud<PointXYZRGBA>::Ptr& cloudKP, PointCloud<SHOT352>::Ptr& cloudDes) {
@@ -224,7 +225,7 @@ void keypoints(PointCloud<PointXYZRGBA>::Ptr& cloud, PointCloud<PointXYZRGBA>::P
 	UniformSampling<PointXYZRGBA> uniform_sampling;
 
 	uniform_sampling.setInputCloud(cloud);
-	uniform_sampling.setRadiusSearch(0.05f);
+	uniform_sampling.setRadiusSearch(0.02f);
 	uniform_sampling.filter(*cloudKP);
 
 	// ISS
@@ -252,6 +253,24 @@ void keypoints(PointCloud<PointXYZRGBA>::Ptr& cloud, PointCloud<PointXYZRGBA>::P
 	// Display
 	// showCloud(cloud, cloudKP);
 	cout << "Detected: " << cloudKP->size() << endl;
+}
+
+void removeCajonera(PointCloud<PointXYZRGBA>::Ptr& scene) {
+
+	PointIndices::Ptr inliers(new PointIndices);
+	ExtractIndices<PointXYZRGBA> extract;
+
+	for(size_t i=0; i<scene->size(); i++) {
+		// cout << "x: " << scene->points[i].x << "y: " << scene->points[i].y << "y: " << scene->points[i].y << endl;
+		if (scene->points[i].y > 0.25) {
+			inliers->indices.push_back(i);
+		}
+	}
+
+	extract.setInputCloud(scene);
+	extract.setIndices(inliers);
+	extract.setNegative(true);
+	extract.filter(*scene);
 }
 
 void getModel(PointCloud<PointXYZ>::Ptr scene, PointIndices::Ptr& inliers, float threshold) {
@@ -394,7 +413,12 @@ int main (int argc, char** argv) {
 	// 	objectsDes.push_back(object);
 	// }
 
-	// Definir el vector de correspondencias
+	// Definir el vector de correspondencias y el vector que contiene los umbrales
+	vector<float> maximumDistanceCorr;
+	maximumDistanceCorr.push_back(0.8);
+	maximumDistanceCorr.push_back(0.8);
+	maximumDistanceCorr.push_back(0.8);
+	maximumDistanceCorr.push_back(0.8);
 	vector<CorrespondencesPtr> correspondences;
 	for(size_t i=0; i<4; i++) {
 		CorrespondencesPtr correspondence(new Correspondences);
@@ -402,11 +426,11 @@ int main (int argc, char** argv) {
 	}
 
 	// Definir el vector de correspondencias filtradas y el vector que contiene los umbrales
-	vector<float> maximumDistance;
-	maximumDistance.push_back(1.1925);
-	maximumDistance.push_back(1.21);
-	maximumDistance.push_back(1.25);
-	maximumDistance.push_back(1.2);
+	vector<float> maximumDistanceRej;
+	maximumDistanceRej.push_back(0.2);
+	maximumDistanceRej.push_back(0.1);
+	maximumDistanceRej.push_back(0.2);
+	maximumDistanceRej.push_back(0.2);
 	vector<CorrespondencesPtr> correspondencesFilt;
 	for(size_t i=0; i<4; i++) {
 		CorrespondencesPtr correspondence(new Correspondences);
@@ -418,7 +442,7 @@ int main (int argc, char** argv) {
 
     // Eliminar planos dominantes_______________________________________________
 	removePlane(scene, threshold);
-
+	removeCajonera(scene);
     // Extraer los detectores y descriptores____________________________________
 	keypoints(scene, sceneKP);
 	for(int i=0; i<4; i++) {
@@ -432,18 +456,20 @@ int main (int argc, char** argv) {
 
     //Matching entre objetos y escena__________________________________________
 	for(int i=0; i<4; i++) {
-		matching(correspondences[i],objectsDes[i],sceneDes);
+		matching(correspondences[i],objectsDes[i],sceneDes,maximumDistanceCorr[i]);
+		showCorrespondences(scene, objects[i], correspondences[i], sceneKP, objectsKP[i]);
 		cout << "Correspondences found: " << correspondences[i]->size () << endl;
 	}
 
     // Corregir malos emparejamientos___________________________________________
 	for(int i=0; i<4; i++) {
-		rejection(correspondences[i],correspondencesFilt[i],objects[i],scene, maximumDistance[i]);
+		rejection(correspondences[i],correspondencesFilt[i],objectsKP[i],sceneKP, maximumDistanceRej[i]);
+		showCorrespondences(scene, objects[i], correspondencesFilt[i], sceneKP, objectsKP[i]);
 	}
 
     // Calcular la transformacion y refinar el resultado con ___________________
 	for(int i=0; i<4; i++) {
-		transformation(correspondencesFilt[i],objects[i],scene);
+		transformation(correspondencesFilt[i],objectsKP[i],sceneKP,objects[i],scene);
 	}
 
   return 0;

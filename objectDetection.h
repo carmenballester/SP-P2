@@ -18,7 +18,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/correspondence_estimation.h>
-#include <pcl/registration/correspondence_rejection_distance.h>
+#include <pcl/registration/correspondence_rejection_sample_consensus.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_weighted.h>
@@ -37,5 +37,3 @@
 using namespace std;
 using namespace cv;
 using namespace pcl;
-
-// Be

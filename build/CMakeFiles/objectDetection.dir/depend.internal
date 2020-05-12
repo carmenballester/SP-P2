@@ -532,7 +532,7 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/local/include/pcl-1.8/pcl/registration/convergence_criteria.h
  /usr/local/include/pcl-1.8/pcl/registration/correspondence_estimation.h
  /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection.h
- /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection_distance.h
+ /usr/local/include/pcl-1.8/pcl/registration/correspondence_rejection_sample_consensus.h
  /usr/local/include/pcl-1.8/pcl/registration/correspondence_sorting.h
  /usr/local/include/pcl-1.8/pcl/registration/correspondence_types.h
  /usr/local/include/pcl-1.8/pcl/registration/default_convergence_criteria.h
@@ -541,7 +541,7 @@ CMakeFiles/objectDetection.dir/objectDetection.cpp.o
  /usr/local/include/pcl-1.8/pcl/registration/icp.h
  /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_estimation.hpp
  /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection.hpp
- /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection_distance.hpp
+ /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_rejection_sample_consensus.hpp
  /usr/local/include/pcl-1.8/pcl/registration/impl/correspondence_types.hpp
  /usr/local/include/pcl-1.8/pcl/registration/impl/default_convergence_criteria.hpp
  /usr/local/include/pcl-1.8/pcl/registration/impl/icp.hpp
