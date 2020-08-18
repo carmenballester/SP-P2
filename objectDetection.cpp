@@ -2,14 +2,13 @@
 
 void spawnViewer(PointCloud<PointXYZRGBA>::Ptr pointCloud, PointCloud<PointXYZRGBA>::Ptr cloudKP) {
 	boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer ("3D Viewer"));
-	viewer->addCoordinateSystem (1.0);
+	// viewer->addCoordinateSystem (1.0);
 
 	// Visualizar keypoints
 	for(size_t i=0; i<cloudKP->size(); i++){
 		string str = boost::lexical_cast<string>(i);
 		viewer->addSphere (cloudKP->points[i], 0.005, 0, 1, 0, str);
 	}
-
 
 	pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> rgb(pointCloud);
     viewer->addPointCloud<pcl::PointXYZRGBA> (pointCloud, rgb, "id0");
@@ -79,7 +78,7 @@ void spawnViewerTrans(PointCloud<PointXYZRGBA>::Ptr scene, PointCloud<PointXYZRG
     viewer->addPointCloud<pcl::PointXYZRGBA> (scene, rgbS, "id0");
 	viewer->addPointCloud<pcl::PointXYZRGBA> (object, colorHandler, "id1");
 
-	viewer->addCoordinateSystem (1.0);
+	// viewer->addCoordinateSystem (1.0);
 	while(!viewer->wasStopped ()) {
 		viewer->spinOnce(100);
 		boost::this_thread::sleep(boost::posix_time::microseconds(100000));
@@ -112,31 +111,21 @@ void transformation(CorrespondencesPtr correspondenceFilt, PointCloud<PointXYZRG
 	// printf ("\n");
 	// printf ("t = < %0.3f, %0.3f, %0.3f >\n", transform (0,3), transform (1,3), transform (2,3));
 
-	pcl::transformPointCloud(*object, *object, transform);
+	transformPointCloud(*object, *object, transform);
 	showTransformation(scene, object);
 
 //______________________________________________________________________________
-	// IterativeClosestPoint<PointXYZRGBA, PointXYZRGBA>::Matrix4 transform2;
-	// IterativeClosestPoint<PointXYZRGBA, PointXYZRGBA> icp;
-	// PointCloud<PointXYZRGBA>::Ptr object_registered;
-	//
-	// icp.setInputSource(object);
-	// icp.setInputTarget(scene);
-	//
-	// // Set the max correspondence distance to 5cm (e.g., correspondences with higher distances will be ignored)
-	// icp.setMaxCorrespondenceDistance (0.05);
-	// // Set the maximum number of iterations (criterion 1)
-	// icp.setMaximumIterations (50);
-	// // Set the transformation epsilon (criterion 2)
-	// icp.setTransformationEpsilon (1e-8);
-	// // Set the euclidean distance difference epsilon (criterion 3)
-	// icp.setEuclideanFitnessEpsilon (1);
-	//
-	//
-	// Eigen::Matrix4f transformation = icp.getFinalTransformation ();
-	// pcl::transformPointCloud(*object, *object, transformation);
-	// showTransformation(scene, object);
+	IterativeClosestPoint<PointXYZRGBA, PointXYZRGBA> icp;
 
+	icp.setInputSource(object);
+	icp.setInputTarget(scene);
+	icp.align(*object);
+
+	Eigen::Matrix4f transformICP = icp.getFinalTransformation();
+	transformPointCloud(*object, *object, transformICP);
+	showTransformation(scene, object);
+
+	 cout << "Error: " << icp.getFitnessScore() << endl;
 }
 
 void rejection(CorrespondencesPtr correspondence, CorrespondencesPtr correspondenceFilt, PointCloud<PointXYZRGBA>::Ptr& objectKP, PointCloud<PointXYZRGBA>::Ptr& sceneKP, float maximumDistance) {
@@ -179,6 +168,8 @@ void matching(CorrespondencesPtr correspondence, PointCloud<SHOT352>::Ptr& objec
 	est.setInputSource(objectDes);
 	est.setInputTarget(sceneDes);
 	est.determineReciprocalCorrespondences(*correspondence, maximumDistance);
+
+	cout << "Correspondences found: " << correspondence->size () << endl;
 }
 
 void features(PointCloud<PointXYZRGBA>::Ptr& cloud, PointCloud<PointXYZRGBA>::Ptr& cloudKP, PointCloud<SHOT352>::Ptr& cloudDes) {
@@ -430,7 +421,7 @@ int main (int argc, char** argv) {
 	maximumDistanceRej.push_back(0.2);
 	maximumDistanceRej.push_back(0.1);
 	maximumDistanceRej.push_back(0.2);
-	maximumDistanceRej.push_back(0.2);
+	maximumDistanceRej.push_back(0.06);
 	vector<CorrespondencesPtr> correspondencesFilt;
 	for(size_t i=0; i<4; i++) {
 		CorrespondencesPtr correspondence(new Correspondences);
@@ -457,14 +448,14 @@ int main (int argc, char** argv) {
     //Matching entre objetos y escena__________________________________________
 	for(int i=0; i<4; i++) {
 		matching(correspondences[i],objectsDes[i],sceneDes,maximumDistanceCorr[i]);
-		showCorrespondences(scene, objects[i], correspondences[i], sceneKP, objectsKP[i]);
-		cout << "Correspondences found: " << correspondences[i]->size () << endl;
+		// showCorrespondences(scene, objects[i], correspondences[i], sceneKP, objectsKP[i]);
+
 	}
 
     // Corregir malos emparejamientos___________________________________________
 	for(int i=0; i<4; i++) {
 		rejection(correspondences[i],correspondencesFilt[i],objectsKP[i],sceneKP, maximumDistanceRej[i]);
-		showCorrespondences(scene, objects[i], correspondencesFilt[i], sceneKP, objectsKP[i]);
+		// showCorrespondences(scene, objects[i], correspondencesFilt[i], sceneKP, objectsKP[i]);
 	}
 
     // Calcular la transformacion y refinar el resultado con ___________________
